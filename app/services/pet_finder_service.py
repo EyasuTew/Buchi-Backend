@@ -90,6 +90,7 @@ async def get_petfinder_results(search):
         print("pet...",pet)
         petfinder_results.append(
             {
+                "pet_id": pet["id"],
                 "source": "petfinder",
                 "name": pet["name"],
                 "type": pet["type"],

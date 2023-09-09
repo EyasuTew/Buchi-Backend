@@ -44,7 +44,8 @@ async def create_pet(
 
     result = pet_collection.insert_one(pet.__dict__)
     _id = result.inserted_id
-    return {**pet.__dict__, "_id": str(_id)}
+    # return {**pet.__dict__, "_id": str(_id)}
+    return {"status": "success", "petId": str(_id)}
 
 async def search_pets(
     pet_type: str | None = None,
@@ -84,8 +85,6 @@ async def search_pets(
     if good_with_children is not None:
         query["good_with_children"] = good_with_children
 
-    print("Query")
-    print(query)
     res = pet_collection.find(query)
     print(list(res))
 
@@ -98,19 +97,17 @@ async def search_pets(
         if "pet_type" in query:
             query["type"] = query["pet_type"]
             del query["pet_type"]
-        print("remaining....", remaining)
-        petfinder_results = await get_petfinder_results(query)
-        return local_result+petfinder_results
 
-    return pets_serializer(pet_collection.find(query))
+        petfinder_results = await get_petfinder_results(query)
+        return {"status": "success", "pets": local_result+petfinder_results}
 
 def pet_serializer(pet)->dict:
     return {
-        "_id": str(pet["_id"]),
+        "pet_id": str(pet["_id"]),
         "source": pet["source"],
         "size": pet["size"],
         "name": pet["name"],
-        "pet_type": pet["pet_type"],
+        "type": pet["pet_type"],
         "age": pet["age"],
         "gender": pet["gender"],
         "good_with_children": pet["good_with_children"],

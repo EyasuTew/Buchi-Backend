@@ -14,12 +14,10 @@ async def create_customer(customer: CustomerRequest):
             status_code=400, detail="Phone number can not be empty.")
 
     res=customer_collection.find({"phone_number":customer.phone_number})
-    # print(res)
-    # print(list(res))
-    # print(len(list(res)))
     if(len(list(res))>0):
         raise HTTPException(status_code=403,
                             detail="Customer with specified number is already registered!")
     result = customer_collection.insert_one(customer.__dict__)
     _id = result.inserted_id
-    return  {**customer.__dict__, "_id": str(_id)}
+    # return  {**customer.__dict__, "_id": str(_id)}
+    return {"status": "success", "customerId": str(_id)}

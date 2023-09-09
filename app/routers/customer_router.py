@@ -1,6 +1,4 @@
 from fastapi import APIRouter
-
-from app.entities.customers import Customer
 from app.schemas.customer_schema import CustomerRequest, CustomerResponse
 import app.services.customer_service as customer_service
 

@@ -1,13 +1,7 @@
 from datetime import datetime, date
-from typing import Optional
-
 from bson import ObjectId
 from fastapi import HTTPException
-
-from app.entities.adoptions import Adoption
 from app.schemas.adoption_schema import AdoptionRequest
-from app.entities.customers import Customer
-# from app.entities.pets import Pet
 from ..database import pet_collection, adoption_collection, customer_collection
 
 async def create_adoption(adoption: AdoptionRequest):
@@ -35,55 +29,28 @@ async def create_adoption(adoption: AdoptionRequest):
 
     result = adoption_collection.insert_one(adoption.__dict__)
     _id = result.inserted_id
-    adoption_dict = {** adoption.__dict__}
-    return {'customer_id': str(adoption_dict['customer_id']), 'pet_id': str(adoption_dict['pet_id']), "_id": str(_id)}
-    # return {"status": "success", "adoption_id": result.pk}
+    return {"status": "success", "adoption_id": str(_id)}
 
-
-async def get_adoptions(fromDate: date ,
+async def search_adoptions(fromDate: date ,
                         toDate: date,
                         limit: int = 0):
-    # return fromDate
-    # set default start and end dates if none are provided
-    # if fromDate is None:
-    #     fromDate = datetime.date.min
-    # if toDate is None:
-    #     toDate = datetime.date.max
-    # fromDate = datetime.datetime.combine(fromDate, datetime.time.min)
-    # toDate = datetime.datetime.combine(toDate, datetime.time.min)
-
-    # retrieve all adoption records within the date range
-    # adoptions = Adoption.objects.filter(
-    #     adoption_date__gte=fromDate, adoption_date__lte=toDate).select_related()
-
     query = {}
     if fromDate:
         query["adoption_date"] = {"$gte": datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)}
     if toDate:
         query["adoption_date"] = {"$lte": datetime(toDate.year, toDate.month, toDate.day, 23, 59, 59)}
-    # if limit:
-    #     query["age"] = {"$in": [a.lower() for a in age]}
+    return adoptions_serializer(adoption_collection.find(query).limit(limit))
 
-    print("Query")
-    print(query)
-    res = adoption_collection.find(query).limit(limit)
-    print(list(res))
 
-    # format the adoption records for output
-    # adoption_list = []
-    # for adoption in adoptions:
-    #     adopt = {}
-    #
-    #     adopt['adoption_id'] = adoption.pk
-    #     adopt['adoption_date'] = adoption.adoption_date.date()
-    #     adopt['customer'] = adoption.customer.to_mongo().to_dict()
-    #     adopt['pet'] = adoption.pet.to_mongo().to_dict()
-    #     adoption_list.append(adopt)
-    #
-    # if limit:
-    #     adoption_list = adoption_list[:limit]
-
-    return adoptions_serializer(adoption_collection.find(query).limit(limit)) #{"status": "success", "schemas": adoption_list}
+async def get_adoptions(fromDate: date ,
+                        toDate: date,
+                        limit: int = 0):
+    query = {}
+    if fromDate:
+        query["adoption_date"] = {"$gte": datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)}
+    if toDate:
+        query["adoption_date"] = {"$lte": datetime(toDate.year, toDate.month, toDate.day, 23, 59, 59)}
+    return {"status": "success", "data": search_adoptions(fromDate, toDate, limit) }
 
 def adoption_serializer(adoption)->dict:
     customer = customer_collection.find_one({"_id": ObjectId(str(adoption["customer_id"]))})
