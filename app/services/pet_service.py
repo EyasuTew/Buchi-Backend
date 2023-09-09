@@ -1,0 +1,120 @@
+from dotenv import load_dotenv
+from fastapi import (APIRouter, File, Form, HTTPException, Query,
+                     UploadFile)
+from app.services.pet_finder_service import get_petfinder_results
+from ..database import pet_collection
+from ..schemas.pet_schema import PetData
+import uuid
+import shutil
+load_dotenv()
+async def create_pet(
+    name: str = Form(),
+    pet_type: str = Form(),
+    good_with_children: bool = Form(),
+    age: str = Form(),
+    gender: str = Form(),
+    size: str = Form(),
+    photos: list[UploadFile] = File(...),
+):
+
+    # Validate the schemas
+    if not name:
+        raise HTTPException(status_code=400, detail="Pet name cannot be empty")
+    if not pet_type:
+        raise HTTPException(status_code=400, detail="Pet type cannot be empty")
+    if not age:
+        raise HTTPException(status_code=400, detail="Pet age range cannot be empty")
+    if not gender:
+        raise HTTPException(status_code=400, detail="Pet gender cannot be empty")
+    if not size:
+        raise HTTPException(status_code=400, detail="Pet size cannot be empty")
+    if not photos:
+        raise HTTPException(status_code=400, detail="Pet photo cannot be empty")
+
+    photo_urls = []
+    for photo in photos:
+        photo_url = "public/"+uuid.uuid1().__str__()+"."+photo.filename.split(".")[1] #photo.content_type
+        with open(photo_url, "wb") as buffer:
+            shutil.copyfileobj(photo.file, buffer)
+        photo_url= "http://localhost:8000/"+photo_url
+        photo_urls.append(photo_url)
+
+    pet = PetData(name = name, photos = photo_urls, pet_type = pet_type, good_with_children = good_with_children,
+                  age = age, gender = gender, size = size, source="local")
+
+    result = pet_collection.insert_one(pet.__dict__)
+    _id = result.inserted_id
+    return {**pet.__dict__, "_id": str(_id)}
+
+async def search_pets(
+    pet_type: str | None = None,
+    age: list[str] | None = Query(None),
+    size: list[str] | None = Query(None),
+    gender: list[str] | None = Query(None),
+    good_with_children: bool | None = None,
+    limit: int = 0,
+):
+    # Validate the age range
+    if age:
+        for a in age:
+            if a not in ["baby", "young", "adult", "senior"]:
+                raise HTTPException(status_code=400, detail="Invalid pet age range")
+
+    # Validate the size range
+    if size:
+        for s in size:
+            if s not in ["small", "medium", "large"]:
+                raise HTTPException(status_code=400, detail="Invalid pet size range")
+
+    # Validate the gender range
+    if gender:
+        for g in gender:
+            if g not in ["male", "female"]:
+                raise HTTPException(status_code=400, detail="Invalid pet gender range")
+    # Query the database for the pets
+    query = {}
+    if pet_type:
+        query["type"] = pet_type.lower()
+    if age:
+        query["age"] = {"$in": [a.lower() for a in age]}
+    if size:
+        query["size"] = {"$in": [s.lower() for s in size]}
+    if gender:
+        query["gender"] = {"$in": [g.lower() for g in gender]}
+    if good_with_children is not None:
+        query["good_with_children"] = good_with_children
+
+    print("Query")
+    print(query)
+    res = pet_collection.find(query)
+    print(list(res))
+
+    local_result = pets_serializer(pet_collection.find(query).limit(limit))
+    if(len(local_result)>=limit):
+        return local_result
+    else:
+        remaining = limit - len(local_result)
+        query["limit"] = remaining
+        if "pet_type" in query:
+            query["type"] = query["pet_type"]
+            del query["pet_type"]
+        print("remaining....", remaining)
+        petfinder_results = await get_petfinder_results(query)
+        return local_result+petfinder_results
+
+    return pets_serializer(pet_collection.find(query))
+
+def pet_serializer(pet)->dict:
+    return {
+        "_id": str(pet["_id"]),
+        "source": pet["source"],
+        "size": pet["size"],
+        "name": pet["name"],
+        "pet_type": pet["pet_type"],
+        "age": pet["age"],
+        "gender": pet["gender"],
+        "good_with_children": pet["good_with_children"],
+        "photos": pet["photos"],
+    }
+def pets_serializer(pets)->list:
+    return [pet_serializer(pet) for pet in pets]

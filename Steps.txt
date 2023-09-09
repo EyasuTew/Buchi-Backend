@@ -1,0 +1,12 @@
+py -m pip install --user virtualenv
+
+
+py -m venv env
+
+
+.\env\Scripts\activate
+
+
+deactivate
+
+(venv) PS C:\Users\Pc1\Documents\PythonProjects\buchi-backend> uvicorn app.main:app
