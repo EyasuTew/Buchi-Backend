@@ -161,6 +161,6 @@ cython_debug/
 
 #public file
 
-/public
+/public/**
 
 /app/entities
