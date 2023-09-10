@@ -12,21 +12,27 @@ def test_pets_list():
 
 def test_pets_post():
 
-    with open('app/tests/Cat.jpg', 'rb') as img:
-        content = img.read()
+    dog_image_1 = None
+    dog_image_2 = None
+    with open('tests/test_files/dog-1.jpg', 'rb') as img:
+        dog_image_1 = img.read()
+
+    with open('tests/test_files/dog-2.jpg', 'rb') as img:
+        dog_image_2 = img.read()
 
     response = client.post('api/v1/pets',
                            data={
-                               "name": "Test3",
-                               "pet_type": "test2 dog",
-                               "age": "test2 baby",
-                               "gender": " test2 male",
-                               "size": "test2 small",
+                               "name": "Golden retriever dog",
+                               "pet_type": "dog",
+                               "age": "baby",
+                               "gender": " male",
+                               "size": "small",
                                "good_with_children": True,
-
                            },
                            files=[
-                               ('photos', ('buchi.jpg', content))
+                               ('photos', ('dog-1.jpg', dog_image_1)),
+                               ('photos', ('dog-2.jpg', dog_image_2))
+
                            ],)
 
     assert response.status_code == 200

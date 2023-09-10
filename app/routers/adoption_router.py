@@ -15,6 +15,5 @@ async def create_adoption(adoption: AdoptionRequest):
     return await adoption_service.create_adoption(adoption)
 
 @router.get("/api/v1/adoptions")
-async def get_adoptions(fromDate: Optional[date] = None,
-                        toDate: Optional[date] = None, limit: int = 0):
+async def get_adoptions(fromDate: Optional[date] = None, toDate: Optional[date] = None, limit: int = 0):
     return await adoption_service.get_adoptions(fromDate, toDate, limit)

@@ -5,7 +5,7 @@ from app.schemas.adoption_schema import AdoptionRequest
 from ..database import pet_collection, adoption_collection, customer_collection
 
 async def create_adoption(adoption: AdoptionRequest):
-    adoption.adoption_date = datetime.datetime.now()
+    adoption.adoption_date = datetime.now()
     if not adoption.customer_id:
         raise HTTPException(
             status_code=400, detail='customer id can not be empty.')
@@ -31,9 +31,16 @@ async def create_adoption(adoption: AdoptionRequest):
     _id = result.inserted_id
     return {"status": "success", "adoption_id": str(_id)}
 
-async def search_adoptions(fromDate: date ,
+def search_adoptions(fromDate: date ,
                         toDate: date,
-                        limit: int = 0):
+                        limit: int):
+    # query = {}
+    # if fromDate:
+    #     query["$gte"] = datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)
+    # if toDate:
+    #     query["$lte"] = datetime(toDate.year, toDate.month, toDate.day, 23, 59, 59)
+    # return adoptions_serializer(adoption_collection.find({"adoption_date" : query}).limit(limit))
+
     query = {}
     if fromDate:
         query["adoption_date"] = {"$gte": datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)}
@@ -44,19 +51,14 @@ async def search_adoptions(fromDate: date ,
 
 async def get_adoptions(fromDate: date ,
                         toDate: date,
-                        limit: int = 0):
-    query = {}
-    if fromDate:
-        query["adoption_date"] = {"$gte": datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)}
-    if toDate:
-        query["adoption_date"] = {"$lte": datetime(toDate.year, toDate.month, toDate.day, 23, 59, 59)}
+                        limit: int):
     return {"status": "success", "data": search_adoptions(fromDate, toDate, limit) }
 
 def adoption_serializer(adoption)->dict:
     customer = customer_collection.find_one({"_id": ObjectId(str(adoption["customer_id"]))})
     pet = pet_collection.find_one({"_id": ObjectId(str(adoption["pet_id"]))})
     return {
-        "_id": str(adoption["_id"]),
+        # "_id": str(adoption["_id"]),
         "customer_id": str(adoption["customer_id"]),
         "pet_id": str(adoption["pet_id"]),
         "adoption_date": adoption.get("adoption_date", None),

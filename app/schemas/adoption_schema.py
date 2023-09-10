@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, date
+from typing import Optional
 
 from bson import ObjectId
 # from mongoengine import (ValidationError, DateTimeField)
@@ -17,7 +18,7 @@ class AdoptionRequest(BaseModel):
 
     pet_id: str
 
-    adoption_date: datetime #= datetime.datetime.now() #DateTimeField(default=datetime.datetime.utcnow())
+    adoption_date: Optional[datetime] = date.today()#= datetime.datetime.now() #DateTimeField(default=datetime.datetime.utcnow())
 
 
     # @validator('customer_id')

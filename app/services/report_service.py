@@ -16,11 +16,10 @@ async def generate_report(fromDate: date ,
         query["adoption_date"] = {"$gte": datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)}
     if toDate:
         query["adoption_date"] = {"$lte": datetime(toDate.year, toDate.month, toDate.day, 23, 59, 59)}
-    adoptions = await search_adoptions(fromDate, toDate, 0)
+    adoptions = search_adoptions(fromDate, toDate, 0)
     for adoption in adoptions:
 
         adoption_date = adoption.get("adoption_date", None)
-        pet_type = adoption.get("pet_type", None)
         pet_type = adoption.get("pet_type", None)
         if pet_type:
             count = adopted_pet_types.get(pet_type, None)

@@ -58,47 +58,53 @@ async def search_pets(
     # Validate the age range
     if age:
         for a in age:
-            if a not in ["baby", "young", "adult", "senior"]:
+            if a not in ["baby", "young", "adult", "senior", "Baby", "Young", "Adult", "Senior"]:
                 raise HTTPException(status_code=400, detail="Invalid pet age range")
 
     # Validate the size range
     if size:
         for s in size:
-            if s not in ["small", "medium", "large"]:
+            if s not in ["small", "medium", "large", "Small", "Medium", "Large"]:
                 raise HTTPException(status_code=400, detail="Invalid pet size range")
 
     # Validate the gender range
     if gender:
         for g in gender:
-            if g not in ["male", "female"]:
+            if g not in ["male", "female", "Male", "Female"]:
                 raise HTTPException(status_code=400, detail="Invalid pet gender range")
     # Query the database for the pets
-    query = {}
+    query_local = {}
+    query_pet_finder = {}
     if pet_type:
-        query["type"] = pet_type.lower()
+        query_local["type"] = pet_type.lower()
+        query_pet_finder["type"] = pet_type.lower()
     if age:
-        query["age"] = {"$in": [a.lower() for a in age]}
+        query_local["age"] = {"$in": [a.lower() for a in age]}
+        query_pet_finder["age"] = [a.lower() for a in age]
     if size:
-        query["size"] = {"$in": [s.lower() for s in size]}
+        query_local["size"] = {"$in": [s.lower() for s in size]}
+        query_pet_finder["size"] = [s.lower() for s in size]
     if gender:
-        query["gender"] = {"$in": [g.lower() for g in gender]}
+        query_local["gender"] = {"$in": [g.lower() for g in gender]}
+        query_pet_finder["gender"] = [g.lower() for g in gender]
     if good_with_children is not None:
-        query["good_with_children"] = good_with_children
+        query_local["good_with_children"] = good_with_children
+        query_pet_finder["good_with_children"] = good_with_children
 
-    res = pet_collection.find(query)
-    print(list(res))
+    # res = pet_collection.find(query_local)
+    # print(list(res))
 
-    local_result = pets_serializer(pet_collection.find(query).limit(limit))
+    local_result = pets_serializer(pet_collection.find(query_local).limit(limit))
     if(len(local_result)>=limit):
         return local_result
     else:
         remaining = limit - len(local_result)
-        query["limit"] = remaining
-        if "pet_type" in query:
-            query["type"] = query["pet_type"]
-            del query["pet_type"]
+        query_local["limit"] = remaining
+        if "pet_type" in query_local:
+            query_local["type"] = query_local["pet_type"]
+            del query_local["pet_type"]
 
-        petfinder_results = await get_petfinder_results(query)
+        petfinder_results = await get_petfinder_results(query_pet_finder)
         return {"status": "success", "pets": local_result+petfinder_results}
 
 def pet_serializer(pet)->dict:
