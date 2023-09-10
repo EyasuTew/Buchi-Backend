@@ -26,9 +26,18 @@ load_dotenv()
 #                       password="1234")
 connection = ""
 
-client = MongoClient( host="localhost",
-                      username="buchi_user",
-                      password="1234")
+client = MongoClient("mongodb://root:example@localhost:27017/myproject?authSource=admin")
+# host="localhost",
+#                       username="some_user",
+#                       password="random_pass",
+#                       authSource='sample_db',
+                      # authMechanism='SCRAM-SHA-256'
+                      # )
+print("Mongo")
+print(client.__dict__)
+
+                      # username="buchi_user",
+                      # password="buchi1234")
 # "mongodb+srv://buchi_user:1234@localhost:27017/?retryWrites=true&w=majority")
 
 db = client.buchi_db
