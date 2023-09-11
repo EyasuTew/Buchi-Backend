@@ -17,3 +17,9 @@ https://fastapi.tiangolo.com/tutorial/testing/
 
 $ pip freeze > requirements.txt
 $ pip install -r requirements.txt
+
+https://pymongo.readthedocs.io/en/stable/examples/authentication.html
+
+https://faun.pub/the-connection-between-docker-containers-579854230ad
+https://www.baeldung.com/ops/docker-compose-links-depends-on
+https://github.com/modern-python/fast-api-sqlalchemy-template/blob/main/Dockerfile
