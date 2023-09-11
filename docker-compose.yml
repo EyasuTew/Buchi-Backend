@@ -52,6 +52,10 @@ services:
       - 8000
     ports:
       - 8000:8000
+    networks:
+      - custommer-app-db-network
+#  links:
+#    - mongo
   mongo:
     image: mongo
     restart: always
@@ -62,6 +66,10 @@ services:
       - 127.0.0.1:27017:27017
     volumes:
       - ./data/db:/data/db
+    networks:
+      - custommer-app-db-network
+networks:
+  custommer-app-db-network:
 
 #  mongodb:
 #    image: mongo:latest

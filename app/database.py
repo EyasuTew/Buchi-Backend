@@ -26,7 +26,7 @@ load_dotenv()
 #                       password="1234")
 connection = ""
 
-client = MongoClient("mongodb://root:example@localhost:27017/myproject?authSource=admin")
+client = MongoClient("mongodb://root:example@mongo:27017/myproject?authSource=admin")
 # host="localhost",
 #                       username="some_user",
 #                       password="random_pass",
