@@ -91,9 +91,6 @@ async def search_pets(
         query_local["good_with_children"] = good_with_children
         query_pet_finder["good_with_children"] = good_with_children
 
-    # res = pet_collection.find(query_local)
-    # print(list(res))
-
     local_result = pets_serializer(pet_collection.find(query_local).limit(limit))
     if(len(local_result)>=limit):
         return local_result

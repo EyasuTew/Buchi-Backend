@@ -9,11 +9,4 @@ class PetData(BaseModel):
     gender: str
     size: str
     good_with_children: bool | None
-    # file: bytes = File(...)
-    # photos: list
-    photos: list #list[UploadFile] = File(...),
-
-
-class PetResponse(BaseModel):
-    status: str = 'success'
-    pets: list[PetData]
+    photos: list

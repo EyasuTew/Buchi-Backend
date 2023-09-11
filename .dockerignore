@@ -5,10 +5,7 @@ docker-compose*
 .github
 .dockerignore
 .gitignore
-
-.idea
-.vscode
-
+.idea/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -18,5 +15,5 @@ htmlcov/
 .coverage.*
 .pytest_cache/
 .venv
-venv
-data
+venv/
+data/

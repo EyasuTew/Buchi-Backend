@@ -34,12 +34,6 @@ async def create_adoption(adoption: AdoptionRequest):
 def search_adoptions(fromDate: date ,
                         toDate: date,
                         limit: int):
-    # query = {}
-    # if fromDate:
-    #     query["$gte"] = datetime(fromDate.year, fromDate.month, fromDate.day, 0, 0, 0)
-    # if toDate:
-    #     query["$lte"] = datetime(toDate.year, toDate.month, toDate.day, 23, 59, 59)
-    # return adoptions_serializer(adoption_collection.find({"adoption_date" : query}).limit(limit))
 
     query = {}
     if fromDate:

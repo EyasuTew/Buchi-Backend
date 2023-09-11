@@ -4,7 +4,6 @@ from fastapi import APIRouter, HTTPException
 from .adoption_service import search_adoptions
 router = APIRouter()
 
-
 async def generate_report(fromDate: date ,
                     toDate: date):
 
@@ -28,8 +27,6 @@ async def generate_report(fromDate: date ,
             else:
                 adopted_pet_types[pet_type] = 1
 
-        # print("adoption_date")
-        # print(adoption_date)
         if adoption_date:
             my_dt_trunc = date(adoption_date.year,  # Truncate time component
                                         adoption_date.month,
