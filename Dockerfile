@@ -60,3 +60,5 @@ RUN #chmod +x /app
 #
 #CMD ["gunicorn", "-b", "0.0.0.0:8000","app.main:app", "-w", "6", "-k", "uvicorn.workers.UvicornWorker"]
 CMD ["uvicorn", "app.main:app","--host", "0.0.0.0","--port", "8000"]
+#ENTRYPOINT ["uvicorn app.main:app", "--host 0.0.0.0", "--port 8000"]
+#exec uvicorn app.main:app --host 0.0.0.0 --port 8080"]
