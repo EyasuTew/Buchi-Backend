@@ -7,8 +7,9 @@
 **- Docker Desktop latest** 
 
 ### Run the app
-
-
-
+Run 
+`docker-compose up
+`
+on the root folder of the project
 
 

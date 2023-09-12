@@ -1,11 +1,11 @@
 Dockerfile*
 docker-compose*
 *.pyc
-.git
+**/.git
 .github
-.dockerignore
-.gitignore
-.idea/
+**/.dockerignore
+**/.gitignore
+**/.idea
 __pycache__/
 *.py[cod]
 *$py.class
@@ -13,7 +13,7 @@ __pycache__/
 htmlcov/
 .coverage
 .coverage.*
-.pytest_cache/
+**/.pytest_cache
 .venv
-venv/
-data/
+**/venv
+**/data
