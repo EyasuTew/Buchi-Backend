@@ -13,3 +13,7 @@ Run
 on the root folder of the project
 
 
+Use postman collection `Buchi-Backend` Link https://interstellar-shadow-486161.postman.co/workspace/67e7cfe8-e9d6-458b-8169-0fb45182efa5
+
+
+
